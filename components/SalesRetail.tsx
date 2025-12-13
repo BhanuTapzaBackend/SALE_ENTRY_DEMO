@@ -8,18 +8,18 @@ import {
   Trash2, 
   Info, 
   Save, 
-  Stethoscope,
-  Clock,
-  CheckCircle2,
-  Receipt,
-  History,
-  ChevronRight,
-  Pill,
-  Factory,
-  Layers,
-  Printer,
-  FileText,
-  AlertCircle
+  Stethoscope, 
+  Clock, 
+  CheckCircle2, 
+  Receipt, 
+  History, 
+  ChevronRight, 
+  Pill, 
+  Factory, 
+  Layers, 
+  Printer, 
+  FileText, 
+  AlertCircle 
 } from 'lucide-react';
 import { BillItem, Medicine, SalesHistoryItem } from '../types';
 
@@ -313,7 +313,7 @@ const SalesRetail: React.FC = () => {
       <div className="w-[420px] bg-white flex flex-col z-30 shadow-2xl h-full border-l border-gray-200">
         
         {/* SECTION A: BILLING INFORMATION (Top - Scrollable if needed, but designed to fit) */}
-        <div className="bg-white p-5 border-b border-gray-200 overflow-y-auto max-h-[65%] custom-scrollbar">
+        <div className="bg-white p-5 border-b border-gray-200 overflow-y-auto max-h-[65%] scrollbar-default">
            
            {/* Header */}
            <div className="flex justify-between items-center mb-4">
