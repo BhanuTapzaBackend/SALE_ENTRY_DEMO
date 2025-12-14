@@ -24,6 +24,7 @@ export interface Customer {
   phone: string;
   address?: string;
   credits?: number;
+  state?: string;
 }
 
 export interface BillItem extends Medicine {
