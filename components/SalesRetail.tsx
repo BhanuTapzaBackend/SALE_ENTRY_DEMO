@@ -79,6 +79,7 @@ const SalesRetail: React.FC = () => {
   // Billing State
   const [cashDiscountInput, setCashDiscountInput] = useState<string>('');
   const [useCredits, setUseCredits] = useState(false);
+  const [isInterState, setIsInterState] = useState(false); // False = Intra (SGST/CGST), True = Inter (IGST)
 
   // Modals
   const [isMedicineModalOpen, setIsMedicineModalOpen] = useState(false);
@@ -99,9 +100,12 @@ const SalesRetail: React.FC = () => {
   const itemLevelDiscount = selectedItems.reduce((acc, item) => acc + (item.price * item.qty * (item.disc / 100)), 0);
   
   const taxableValue = subTotal - itemLevelDiscount;
-  const sgst = taxableValue * 0.06;
-  const cgst = taxableValue * 0.06;
-  const gstTotal = sgst + cgst;
+  
+  // Tax Calculations
+  const sgst = isInterState ? 0 : taxableValue * 0.06;
+  const cgst = isInterState ? 0 : taxableValue * 0.06;
+  const igst = isInterState ? taxableValue * 0.12 : 0;
+  const gstTotal = sgst + cgst + igst;
   
   // Bill Total before Cash Discount & Credits
   const billTotal = taxableValue + gstTotal;
@@ -148,6 +152,13 @@ const SalesRetail: React.FC = () => {
      setSelectedCustomer(customer);
      setUseCredits(false); // Reset credits when customer changes
      setIsCustomerModalOpen(false);
+     
+     // Auto-detect State for Tax
+     if (customer.state && customer.state.toLowerCase() !== 'telangana') {
+        setIsInterState(true);
+     } else {
+        setIsInterState(false);
+     }
   };
 
   // Filtered Lists for Modals
@@ -436,6 +447,25 @@ const SalesRetail: React.FC = () => {
                            />
                         </div>
                     </div>
+                    
+                    {/* Tax Type Toggle */}
+                    <div className="flex justify-between items-center text-sm mt-2">
+                        <span className="text-gray-500 font-medium">Tax Type</span>
+                        <div className="flex items-center bg-gray-100 rounded-lg p-0.5 border border-gray-200">
+                            <button 
+                                onClick={() => setIsInterState(false)}
+                                className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${!isInterState ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                            >
+                                Local
+                            </button>
+                            <button 
+                                onClick={() => setIsInterState(true)}
+                                className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${isInterState ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                            >
+                                IGST
+                            </button>
+                        </div>
+                    </div>
 
                     {/* Credits Toggle (Only if available) */}
                     {availableCredits > 0 && (
@@ -463,7 +493,7 @@ const SalesRetail: React.FC = () => {
                     </div>
 
                     {/* Collapsible Details Content */}
-                    <div className={`overflow-hidden transition-all duration-300 space-y-2 ${isBillingSummaryOpen ? 'max-h-40 opacity-100 pt-2' : 'max-h-0 opacity-0'}`}>
+                    <div className={`overflow-hidden transition-all duration-300 space-y-2 ${isBillingSummaryOpen ? 'max-h-48 opacity-100 pt-2' : 'max-h-0 opacity-0'}`}>
                         <div className="flex justify-between items-center text-xs text-gray-400">
                             <span>Total MRP</span>
                             <span>₹ {totalMrp.toFixed(2)}</span>
@@ -472,14 +502,23 @@ const SalesRetail: React.FC = () => {
                             <span className="text-gray-500">Item Discounts</span>
                             <span className="text-green-600 font-medium">- ₹ {itemLevelDiscount.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between items-center text-xs">
-                            <span className="text-gray-500">SGST (6%)</span>
-                            <span>₹ {sgst.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-xs">
-                            <span className="text-gray-500">CGST (6%)</span>
-                            <span>₹ {cgst.toFixed(2)}</span>
-                        </div>
+                        {!isInterState ? (
+                            <>
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="text-gray-500">SGST (6%)</span>
+                                    <span>₹ {sgst.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="text-gray-500">CGST (6%)</span>
+                                    <span>₹ {cgst.toFixed(2)}</span>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="flex justify-between items-center text-xs">
+                                <span className="text-gray-500">IGST (12%)</span>
+                                <span>₹ {igst.toFixed(2)}</span>
+                            </div>
+                        )}
                     </div>
 
                     {/* Final Total */}
