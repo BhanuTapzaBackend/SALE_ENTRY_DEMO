@@ -18,6 +18,20 @@ export interface Medicine {
   stock: number;
 }
 
+export interface MasterMedicine {
+  _id: string;
+  medicineId: string;
+  medicineName: string;
+  manufacturerName: string;
+  saltComposition: string;
+  hsnCode: string;
+  sgstPercent: number;
+  cgstPercent: number;
+  igstPercent: number;
+  unitPerPack: number;
+  medicinePackingType: string;
+}
+
 export interface Customer {
   id: string;
   name: string;
@@ -27,8 +41,37 @@ export interface Customer {
   state?: string;
 }
 
+export interface Supplier {
+  id: string;
+  name: string;
+  email: string;
+  mobile: string;
+  altMobile?: string;
+  address: string;
+  type: 'Wholesaler' | 'Manufacturer' | 'Distributor';
+  drugLicenseNo: string;
+  gstin: string;
+  bankName?: string;
+  accountNumber?: string;
+  ifscCode?: string;
+  upiId?: string;
+  walletBalance?: number;
+}
+
 export interface BillItem extends Medicine {
   qty: number;
+}
+
+export interface PurchaseItem extends MasterMedicine {
+  uniqueId: string; // for React keys since we might add same medicine multiple times for different batches
+  batchNumber: string;
+  expiryDate: string;
+  mrp: number;
+  rate: number;
+  qty: number;
+  free: number;
+  discountPercent: number;
+  amount: number;
 }
 
 export interface SalesHistoryItem {

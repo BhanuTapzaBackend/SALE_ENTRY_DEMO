@@ -16,9 +16,13 @@ import {
   RotateCcw
 } from 'lucide-react';
 import SalesRetail from './components/SalesRetail';
+import PurchaseEntry from './components/PurchaseEntry';
 
-const SidebarItem = ({ icon: Icon, label, active = false, hasSubmenu = false, count }: any) => (
-  <div className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-colors ${active ? 'bg-blue-800 text-white border-l-4 border-blue-400' : 'text-blue-100 hover:bg-blue-800/50'}`}>
+const SidebarItem = ({ icon: Icon, label, active = false, hasSubmenu = false, count, onClick }: any) => (
+  <div 
+    onClick={onClick}
+    className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-colors ${active ? 'bg-blue-800 text-white border-l-4 border-blue-400' : 'text-blue-100 hover:bg-blue-800/50'}`}
+  >
     <div className="flex items-center gap-3">
       <Icon size={18} />
       <span className="text-sm font-medium">{label}</span>
@@ -32,6 +36,7 @@ const SidebarItem = ({ icon: Icon, label, active = false, hasSubmenu = false, co
 
 const App: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [activeView, setActiveView] = useState<'sales' | 'purchase'>('sales');
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100">
@@ -53,8 +58,21 @@ const App: React.FC = () => {
           <div className="px-4 mt-6 mb-2 text-xs font-semibold text-blue-400 uppercase tracking-wider">
             {sidebarOpen && 'Inventory & Sales'}
           </div>
-          <SidebarItem icon={ShoppingCart} label={sidebarOpen ? "Sales Retail" : ""} active={true} hasSubmenu />
-            {sidebarOpen && (
+          <SidebarItem 
+            icon={ShoppingCart} 
+            label={sidebarOpen ? "Sales Retail" : ""} 
+            active={activeView === 'sales'} 
+            hasSubmenu 
+            onClick={() => setActiveView('sales')}
+          />
+          <SidebarItem 
+             icon={Package} 
+             label={sidebarOpen ? "Purchase Entry" : ""} 
+             active={activeView === 'purchase'}
+             onClick={() => setActiveView('purchase')}
+          />
+
+            {sidebarOpen && activeView === 'sales' && (
               <div className="bg-[#151b60]/50 mb-2">
                 <div className="pl-12 py-2 text-sm text-blue-200 hover:text-white cursor-pointer">Wholesale</div>
                 <div className="pl-12 py-2 text-sm text-blue-200 hover:text-white cursor-pointer">Sales Returns</div>
@@ -63,7 +81,7 @@ const App: React.FC = () => {
                 </div>
               </div>
             )}
-          <SidebarItem icon={Package} label={sidebarOpen ? "Stock Transfer" : ""} />
+          
           <SidebarItem icon={Truck} label={sidebarOpen ? "Delivery Challan" : ""} />
           <SidebarItem icon={RotateCcw} label={sidebarOpen ? "Contra" : ""} />
           
@@ -88,7 +106,9 @@ const App: React.FC = () => {
             <div className="flex items-center text-sm text-gray-500">
               <span className="hover:text-blue-600 cursor-pointer">Medical Sales</span>
               <span className="mx-2">/</span>
-              <span className="font-semibold text-gray-800">Sales Retail</span>
+              <span className="font-semibold text-gray-800">
+                {activeView === 'sales' ? 'Sales Retail' : 'Purchase Entry'}
+              </span>
             </div>
           </div>
 
@@ -119,7 +139,7 @@ const App: React.FC = () => {
 
         {/* Workspace */}
         <main className="flex-1 overflow-hidden relative">
-          <SalesRetail />
+          {activeView === 'sales' ? <SalesRetail /> : <PurchaseEntry />}
         </main>
       </div>
     </div>
